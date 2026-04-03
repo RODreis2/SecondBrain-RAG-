@@ -15,7 +15,7 @@ for file in file_path:
 
     for doc in docs:
         doc.metadata["source"] = file
-        
+
     all_docs.extend(docs)
 
 text_splitter = RecursiveCharacterTextSplitter(
@@ -43,23 +43,29 @@ chain = prompt | model
 
 
 def handle_conversation():
-    context = ""
-    print("Hello my name is ollama, i'm here to help you abbout computing, type 'exit' to quite")
+    history = ""
+
+    print("Hello my name is ollama, i'm here to help you about computing, type 'exit' to quit")
+
     while True:
         query = input("You: ")
+
         if query.lower() == "exit":
             break
+
         results = vector_store.similarity_search(query, k=3)
+        retrieved_context = "\n".join(doc.page_content for doc in results)
 
-        context += "\n".join((doc.page_content for doc in results))
-        
+        full_context = history + "\n" + retrieved_context
+
         response = chain.invoke({
-                "context": context,
-                "question": query
-                })
+            "context": full_context,
+            "question": query
+        })
 
-        print("Bot: ", response)
-        context += f"\nUser: {query}\nAI: {response}"
+        print("Bot:", response)
+
+        history += f"\nUser: {query}\nAI: {response}"
 
 if __name__ == "__main__":
     handle_conversation()
