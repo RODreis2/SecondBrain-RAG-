@@ -1,0 +1,13 @@
+.env
+.venv/
+env/
+credentials.json
+secrets.json
+*.pem
+id_rsa
+id_rsa.pub
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
